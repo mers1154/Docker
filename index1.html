@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node.js Web UI in Docker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .status {
+            background: #f0f9ff;
+            border-left: 5px solid #3b82f6;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+        
+        button {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 10px 5px;
+        }
+        
+        button:hover {
+            background: #4338ca;
+            transform: translateY(-2px);
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 30px 0;
+        }
+        
+        .info-box {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px solid #e2e8f0;
+        }
+        
+        #response {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .docker-badge {
+            display: inline-block;
+            background: #2496ed;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Node.js Web Interface</h1>
+        <div class="docker-badge">Running in Docker Container</div>
+        
+        <div class="status">
+            <h3>📊 Server Status</h3>
+            <p id="serverStatus">Checking server status...</p>
+        </div>
+        
+        <div class="buttons">
+            <button onclick="callAPI()">📡 Call API</button>
+            <button onclick="getDockerInfo()">🐳 Docker Info</button>
+            <button onclick="checkHealth()">❤️ Health Check</button>
+            <button onclick="loadTime()">⏰ Server Time</button>
+        </div>
+        
+        <div class="info-box">
+            <h3>📝 API Response:</h3>
+            <div id="response">Click buttons above to see responses</div>
+        </div>
+        
+        <div class="info-box">
+            <h3>ℹ️ How to access:</h3>
+            <p>• Local: <a href="http://localhost:3000" target="_blank">http://localhost:3000</a></p>
+            <p>• API: <a href="http://localhost:3000/api/hello" target="_blank">http://localhost:3000/api/hello</a></p>
+            <p>• Docker Info: <a href="http://localhost:3000/docker-info" target="_blank">http://localhost:3000/docker-info</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Проверка статуса сервера при загрузке
+        fetch('/')
+            .then(() => {
+                document.getElementById('serverStatus').innerHTML = 
+                    '✅ Server is running and accessible';
+            })
+            .catch(() => {
+                document.getElementById('serverStatus').innerHTML = 
+                    '❌ Cannot connect to server';
+            });
+
+        function callAPI() {
+            fetch('/api/hello')
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('response').textContent = 
+                        JSON.stringify(data, null, 2);
+                });
+        }
+
+        function getDockerInfo() {
+            fetch('/docker-info')
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('response').textContent = 
+                        JSON.stringify(data, null, 2);
+                });
+        }
+
+        function checkHealth() {
+            fetch('/api/hello')
+                .then(res => {
+                    const health = {
+                        status: 'healthy',
+                        statusCode: res.status,
+                        timestamp: new Date().toISOString(),
+                        docker: 'Container is running'
+                    };
+                    document.getElementById('response').textContent = 
+                        JSON.stringify(health, null, 2);
+                });
+        }
+
+        function loadTime() {
+            const time = {
+                clientTime: new Date().toISOString(),
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                message: "Check server response for server time"
+            };
+            document.getElementById('response').textContent = 
+                JSON.stringify(time, null, 2);
+            
+            // Получить время сервера
+            fetch('/api/hello')
+                .then(res => res.json())
+                .then(data => {
+                    time.serverTime = data.timestamp;
+                    document.getElementById('response').textContent = 
+                        JSON.stringify(time, null, 2);
+                });
+        }
+
+        // Автоматическое обновление статуса каждые 10 секунд
+        setInterval(() => {
+            fetch('/api/hello')
+                .then(() => {
+                    document.getElementById('serverStatus').innerHTML = 
+                        `✅ Server is running (Last check: ${new Date().toLocaleTimeString()})`;
+                })
+                .catch(() => {
+                    document.getElementById('serverStatus').innerHTML = 
+                        `❌ Connection lost (Last attempt: ${new Date().toLocaleTimeString()})`;
+                });
+        }, 10000);
+    </script>
+</body>
+</html>
