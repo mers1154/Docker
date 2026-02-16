@@ -6,9 +6,10 @@ const PORT = 3000;
 app.use(express.static(__dirname));
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index2.html'));
+    res.sendFile(path.join(__dirname, 'indexhello.html'));
 });
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
+
 });
