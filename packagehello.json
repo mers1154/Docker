@@ -2,7 +2,7 @@
   "name": "simple-react",
   "version": "1.0.0",
   "scripts": {
-    "start": "node index2.js"
+    "start": "node indexhello.js"
   },
   "dependencies": {
     "express": "^4.18.0"
