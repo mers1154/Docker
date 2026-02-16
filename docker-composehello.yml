@@ -2,8 +2,9 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile2.prod 
+      dockerfile: Dockerfilehello.prod 
     ports:
       - "3000:3000"
     volumes:
+
       - .:/app
