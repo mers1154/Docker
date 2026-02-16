@@ -2,10 +2,11 @@
   "name": "node-web-docker",
   "version": "1.0.0",
   "scripts": {
-    "start": "node server1.js"
+    "start": "node serverface.js"
   },
   "dependencies": {
     "express": "^4.18.0"
   }
 
 }
+
