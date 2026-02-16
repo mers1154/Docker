@@ -8,7 +8,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // HTML страница
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index1.html'));
+    res.sendFile(path.join(__dirname, 'public', 'indexface.html'));
 });
 
 // API endpoint
@@ -34,3 +34,4 @@ app.listen(PORT, () => {
     console.log(`✅ Server is running on http://localhost:${PORT}`);
     console.log(`📁 Static files from: ${__dirname}/public`);
 });
+
