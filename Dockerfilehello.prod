@@ -1,7 +1,6 @@
 FROM node:18-alpine
 WORKDIR /app
 
-# Копируем правильный package.json
 COPY package.hello.json ./package.json
 COPY package*.json ./
 
@@ -9,3 +8,4 @@ RUN npm install
 COPY . .
 EXPOSE 3000
 CMD ["node", "indexhello.js"]
+
