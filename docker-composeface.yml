@@ -1,10 +1,10 @@
-version: '3.8'  # Добавьте эту строку обратно
+version: '3.8'
 services:
-  web:
-    build: 
+  face-app:
+    build:
       context: .
       dockerfile: Dockerfileface.prod
-    container_name: node-web-app
+    container_name: face-app
     ports:
       - "3000:3000"
     volumes:
@@ -13,5 +13,27 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=3000
-
     restart: unless-stopped
+    networks:
+      - app-network
+
+  hello-app:
+    build:
+      context: .
+      dockerfile: Dockerfilehello.prod
+    container_name: hello-app
+    ports:
+      - "3001:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+    restart: unless-stopped
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
